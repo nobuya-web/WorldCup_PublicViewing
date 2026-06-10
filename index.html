@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>W杯2026 東京 観戦ガイド｜日本vsチュニジア 6/21</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<style>
+  :root {
+    --blue: #003087; --red: #BC002D; --gold: #FFD700;
+    --bg: #0a0e1a; --card-bg: #141829; --card-border: #1e2640;
+    --text: #e8eaf0; --text-muted: #8a92a8;
+    --green: #22c55e; --orange: #f97316; --new-color: #f59e0b;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans JP',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
+
+  /* HERO */
+  .hero { background:linear-gradient(135deg,#001a4d 0%,#0a0e1a 50%,#2a0010 100%); padding:36px 20px 28px; text-align:center; position:relative; overflow:hidden; border-bottom:3px solid var(--red); }
+  .hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 30% 50%,rgba(0,48,135,.3) 0%,transparent 60%),radial-gradient(ellipse at 70% 50%,rgba(188,0,45,.2) 0%,transparent 60%); }
+  .hero-content { position:relative; z-index:1; max-width:700px; margin:0 auto; display:flex; flex-direction:column; align-items:center; }
+  .hero-badge { display:inline-block; background:var(--red); color:#fff; font-size:11px; font-weight:700; letter-spacing:2px; padding:4px 12px; border-radius:20px; margin-bottom:14px; text-transform:uppercase; }
+  .hero h1 { font-size:clamp(22px,5.5vw,38px); font-weight:800; line-height:1.2; margin-bottom:6px; }
+  .hero h1 span { color:var(--gold); }
+  .hero-sub { font-size:13px; color:var(--text-muted); margin-bottom:10px; }
+  .updated-tag { display:inline-block; margin-bottom:16px; font-size:11px; color:var(--text-muted); background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:8px; padding:3px 10px; }
+  .match-info { display:inline-flex; align-items:center; justify-content:center; gap:20px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:12px 28px; font-weight:600; }
+  .match-team { text-align:center; min-width:60px; }
+  .match-flag { font-size:26px; }
+  .match-vs { font-size:11px; color:var(--text-muted); }
+  .match-time { font-size:12px; color:var(--gold); margin-top:2px; }
+
+  /* TABS */
+  .tab-bar-wrap { background:rgba(255,255,255,.03); border-bottom:2px solid var(--card-border); }
+  .tab-bar { display:flex; gap:8px; max-width:900px; margin:0 auto; padding:12px 16px; }
+  .tab-btn { flex:1; max-width:200px; padding:11px 20px; font-size:15px; font-weight:700; cursor:pointer; border-radius:10px; border:1.5px solid var(--card-border); background:var(--card-bg); color:var(--text-muted); transition:all .2s; display:flex; align-items:center; justify-content:center; gap:7px; }
+  .tab-btn.active { background:#1e2e6e; border-color:#4a7fff; color:#fff; box-shadow:0 0 0 1px rgba(74,127,255,.3); }
+  .tab-btn:hover:not(.active) { border-color:#4a7fff55; color:var(--text); background:rgba(255,255,255,.05); }
+  .tab-panel { display:none; }
+  .tab-panel.active { display:block; }
+
+  /* NEW VENUES BANNER */
+  .new-banner { max-width:900px; margin:16px auto 0; padding:0 16px; }
+  .new-banner-inner { border-radius:14px; border:1.5px solid rgba(245,158,11,.4); background:rgba(245,158,11,.07); overflow:hidden; }
+  .new-banner-header { display:flex; align-items:center; justify-content:space-between; padding:11px 15px; background:rgba(245,158,11,.1); border-bottom:1px solid rgba(245,158,11,.2); cursor:pointer; user-select:none; }
+  .new-banner-title { font-size:14px; font-weight:700; color:var(--new-color); display:flex; align-items:center; gap:7px; }
+  .new-count-badge { background:var(--new-color); color:#000; font-size:11px; font-weight:800; padding:1px 7px; border-radius:10px; }
+  .new-banner-body { padding:12px 15px; }
+  .new-empty { font-size:13px; color:var(--text-muted); }
+  .new-card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:10px; }
+  .new-card { background:rgba(245,158,11,.06); border:1px solid rgba(245,158,11,.25); border-radius:11px; padding:14px; position:relative; }
+  .new-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--new-color),#fcd34d); border-radius:11px 11px 0 0; }
+  .new-badge { display:inline-block; background:var(--new-color); color:#000; font-size:10px; font-weight:800; padding:1px 7px; border-radius:8px; margin-bottom:5px; }
+  .new-card-name { font-size:14px; font-weight:700; margin-bottom:3px; }
+  .new-card-area { font-size:12px; color:var(--text-muted); margin-bottom:3px; }
+  .new-card-price { font-size:13px; font-weight:600; color:var(--new-color); }
+  .new-card-note { font-size:11px; color:var(--text-muted); margin-top:4px; }
+  .new-card-link { display:inline-block; margin-top:7px; font-size:12px; color:#6b9fff; text-decoration:none; }
+
+  /* CHECK TOOLBAR */
+  .check-toolbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 0 4px; font-size:13px; }
+  .check-count { color:var(--text-muted); }
+  .check-count strong { color:var(--green); }
+  .toolbar-btn { padding:5px 12px; border-radius:16px; border:1px solid var(--card-border); background:var(--card-bg); color:var(--text-muted); font-size:12px; cursor:pointer; transition:all .2s; }
+  .toolbar-btn:hover { border-color:#4a7fff; color:var(--text); }
+  .toolbar-btn.active-hide { background:rgba(34,197,94,.12); border-color:var(--green); color:var(--green); }
+
+  /* FILTERS */
+  .filters { display:flex; gap:8px; padding:8px 0; overflow-x:auto; scrollbar-width:none; }
+  .filters::-webkit-scrollbar { display:none; }
+  .filter-btn { flex-shrink:0; padding:7px 16px; border-radius:20px; border:1px solid var(--card-border); background:var(--card-bg); color:var(--text-muted); font-size:13px; cursor:pointer; transition:all .2s; white-space:nowrap; }
+  .filter-btn.active,.filter-btn:hover { background:var(--blue); border-color:var(--blue); color:#fff; }
+  .filter-btn[data-filter="bar"].active,.filter-btn[data-filter="bar"]:hover { background:var(--red); border-color:var(--red); }
+
+  /* SECTION */
+  .section { max-width:900px; margin:0 auto; padding:0 16px 32px; }
+  .section-title { font-size:17px; font-weight:700; margin:20px 0 12px; display:flex; align-items:center; gap:8px; }
+  .section-title::after { content:''; flex:1; height:1px; background:var(--card-border); }
+
+  /* CARD GRID */
+  .card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(278px,1fr)); gap:13px; }
+
+  /* CARD */
+  .card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:14px; padding:17px; transition:transform .2s,border-color .2s,opacity .3s; position:relative; overflow:hidden; }
+  .card:hover { transform:translateY(-2px); border-color:#2e3860; }
+  .card.hidden { display:none; }
+  .card-type-pv::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--blue),#4a7fff); }
+  .card-type-bar::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--red),#ff6b8a); }
+
+  /* CARD HEADER */
+  .card-header { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+  .card-header-left { flex:1; min-width:0; }
+  .card-name { font-size:14.5px; font-weight:700; line-height:1.3; }
+  .card-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
+  .tag { font-size:10px; font-weight:600; padding:2px 8px; border-radius:10px; letter-spacing:.5px; }
+  .tag-free { background:rgba(34,197,94,.15); color:var(--green); border:1px solid rgba(34,197,94,.3); }
+  .tag-lottery { background:rgba(168,85,247,.15); color:#c084fc; border:1px solid rgba(168,85,247,.3); }
+  .tag-ticket { background:rgba(249,115,22,.15); color:var(--orange); border:1px solid rgba(249,115,22,.3); }
+  .tag-drink { background:rgba(251,191,36,.15); color:#fbbf24; border:1px solid rgba(251,191,36,.3); }
+  .tag-area-badge { font-size:11px; font-weight:600; padding:3px 10px; border-radius:10px; white-space:nowrap; background:rgba(255,255,255,.06); color:var(--text-muted); border:1px solid var(--card-border); }
+
+  /* CHECK BUTTON */
+  .card-check-btn {
+    flex-shrink:0; width:28px; height:28px; border-radius:50%;
+    border:1.5px solid var(--card-border); background:transparent;
+    color:var(--text-muted); font-size:13px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .2s; margin-top:2px;
+  }
+  .card-check-btn:hover { border-color:var(--green); color:var(--green); background:rgba(34,197,94,.08); }
+  .card.is-checked .card-check-btn { background:var(--green); border-color:var(--green); color:#fff; }
+
+  /* CARD BODY — collapsible */
+  .card-body { overflow:hidden; transition:max-height .35s ease, opacity .25s; max-height:600px; opacity:1; margin-top:10px; }
+  .card.is-checked .card-body { max-height:0; opacity:0; margin-top:0; }
+  .card.is-checked { opacity:.65; }
+
+  /* CHECKED EXPAND BAR */
+  .card-checked-bar { display:none; margin-top:8px; font-size:11px; color:var(--green); cursor:pointer; }
+  .card-checked-bar:hover { text-decoration:underline; }
+  .card.is-checked .card-checked-bar { display:block; }
+
+  /* CARD BODY CONTENT */
+  .card-info { font-size:12.5px; color:var(--text-muted); }
+  .card-info-row { display:flex; gap:8px; margin-bottom:5px; align-items:flex-start; }
+  .card-info-icon { font-size:13px; flex-shrink:0; margin-top:1px; }
+  .card-price { font-size:15px; font-weight:700; color:#fff; margin-top:12px; }
+  .card-price span { font-size:12px; color:var(--text-muted); font-weight:400; }
+  .card-note { font-size:11px; color:var(--text-muted); background:rgba(255,255,255,.04); border-radius:8px; padding:8px 10px; margin-top:10px; border-left:3px solid var(--card-border); }
+  .card-note.warn { border-left-color:var(--gold); }
+  .card-link { display:inline-block; margin-top:10px; font-size:12px; color:#6b9fff; text-decoration:none; }
+  .card-link:hover { text-decoration:underline; }
+
+  /* NOTICE */
+  .notice { background:rgba(255,215,0,.06); border:1px solid rgba(255,215,0,.2); border-radius:12px; padding:13px 15px; font-size:13px; margin-bottom:10px; display:flex; gap:10px; align-items:flex-start; }
+  .notice-icon { font-size:17px; flex-shrink:0; }
+
+  /* LEGEND */
+  .legend { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:12px; font-size:12px; color:var(--text-muted); align-items:center; }
+  .legend-item { display:flex; align-items:center; gap:4px; }
+  .legend-dot { width:8px; height:8px; border-radius:50%; }
+
+  /* MAP */
+  #map { width:100%; height:calc(100vh - 290px); min-height:460px; border-radius:10px; }
+  .map-wrap { max-width:900px; margin:0 auto; padding:16px; }
+  .map-legend { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:10px; font-size:12px; color:var(--text-muted); }
+  .map-legend-item { display:flex; align-items:center; gap:6px; }
+  .map-legend-dot { width:12px; height:12px; border-radius:50%; }
+
+  /* MAP POPUP */
+  .leaflet-popup-content-wrapper { background:#fff; color:#1a1a2e; border:1px solid #ccc; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,.15); }
+  .leaflet-popup-tip { background:#fff; }
+  .popup-name { font-weight:700; font-size:13px; margin-bottom:3px; color:#111; }
+  .popup-area { font-size:11px; color:#666; margin-bottom:3px; }
+  .popup-price { font-size:12px; color:#b45309; font-weight:600; }
+  .popup-type-pv { color:#1d4ed8; font-size:10px; font-weight:700; letter-spacing:1px; margin-bottom:3px; }
+  .popup-type-bar { color:#BC002D; font-size:10px; font-weight:700; letter-spacing:1px; margin-bottom:3px; }
+  .popup-note { font-size:11px; color:#888; margin-top:3px; }
+
+  footer { text-align:center; padding:22px 16px; font-size:12px; color:var(--text-muted); border-top:1px solid var(--card-border); }
+
+  @media(max-width:480px) {
+    .card-grid { grid-template-columns:1fr; }
+    .match-info { gap:10px; padding:10px 14px; }
+    #map { height:60vh; }
+    .new-card-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">⚽ FIFA World Cup 2026</div>
+    <h1>東京 観戦スポット完全ガイド<br><span>日本 vs チュニジア</span></h1>
+    <p class="hero-sub">パブリックビューイング・スポーツバー・パブ情報をまとめました</p>
+    <div class="updated-tag" id="updated-tag">🕐 情報調査日時: 読み込み中...</div>
+    <div class="match-info">
+      <div class="match-team"><div class="match-flag">🇯🇵</div><div style="font-size:12px">JAPAN</div></div>
+      <div style="text-align:center">
+        <div class="match-vs">GROUP F</div>
+        <div style="font-size:20px;font-weight:800">VS</div>
+        <div class="match-time">6月21日（日）13:00 KO</div>
+      </div>
+      <div class="match-team"><div class="match-flag">🇹🇳</div><div style="font-size:12px">TUNISIA</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar-wrap">
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('list',this)">📋 会場リスト</button>
+    <button class="tab-btn" onclick="switchTab('map',this)">🗺️ 地図で見る</button>
+  </div>
+</div>
+
+<!-- 新着情報バナー -->
+<div class="new-banner">
+  <div class="new-banner-inner">
+    <div class="new-banner-header" onclick="toggleNewBanner()">
+      <div class="new-banner-title">🆕 新着情報 <span class="new-count-badge" id="new-count">0</span></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:11px;color:var(--text-muted)" id="new-updated-meta">毎朝7時更新</span>
+        <span id="new-chevron" style="color:var(--text-muted);font-size:12px">▼</span>
+      </div>
+    </div>
+    <div class="new-banner-body" id="new-banner-body">
+      <div class="new-empty" id="new-empty">本日の新着情報はありません（毎朝7時に自動更新）</div>
+      <div class="new-card-grid" id="new-card-grid" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LIST TAB ===== -->
+<div id="tab-list" class="tab-panel active">
+  <div class="section">
+    <div class="notice" style="margin-top:14px">
+      <span class="notice-icon">⚠️</span>
+      <span>申込・チケット締切が過ぎている会場もあります。最新情報は各公式サイトで必ず確認してください。</span>
+    </div>
+
+    <div class="check-toolbar">
+      <span class="check-count" id="check-count-label">確認済み <strong>0</strong> / <span id="total-count">14</span> 件</span>
+      <button class="toolbar-btn" id="hide-checked-btn" onclick="toggleHideChecked()">確認済みを隠す</button>
+      <button class="toolbar-btn" onclick="resetAllChecked()">すべてリセット</button>
+    </div>
+
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all" onclick="filterCards('all')">すべて</button>
+      <button class="filter-btn" data-filter="pv" onclick="filterCards('pv')">🏟️ PV会場</button>
+      <button class="filter-btn" data-filter="bar" onclick="filterCards('bar')">🍺 スポーツバー・パブ</button>
+      <button class="filter-btn" data-filter="free" onclick="filterCards('free')">無料</button>
+      <button class="filter-btn" data-filter="shibuya" onclick="filterCards('shibuya')">渋谷</button>
+      <button class="filter-btn" data-filter="shinjuku" onclick="filterCards('shinjuku')">新宿</button>
+      <button class="filter-btn" data-filter="roppongi" onclick="filterCards('roppongi')">六本木</button>
+      <button class="filter-btn" data-filter="ebisu" onclick="filterCards('ebisu')">恵比寿</button>
+      <button class="filter-btn" data-filter="other" onclick="filterCards('other')">その他</button>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#4a7fff"></div> パブリックビューイング</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> スポーツバー・パブ（お酒あり）</div>
+      <div class="legend-item" style="margin-left:auto"><div class="legend-dot" style="background:var(--green)"></div> ○ = 確認済み</div>
+    </div>
+
+    <div class="section-title">🏟️ パブリックビューイング</div>
+    <div class="card-grid" id="card-grid">
+
+      <!-- ① MIYASHITA STADIUM -->
+      <div class="card card-type-pv" data-type="pv" data-area="shibuya" data-free="true" data-vid="miyashita-stadium">
+        <div class="card-header">
+          <div class="card-header-left">
+            <div class="card-name">MIYASHITA STADIUM（渋谷・三井不動産×JFA）</div>
+            <div class="card-tags"><span class="tag tag-free">無料</span><span class="tag tag-area-badge">渋谷</span></div>
+          </div>
+          <button class="card-check-btn" onclick="toggleCheck(event,'miyashita-stadium')" title="確認済み">✓</button>
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-info-row"><span class="card-info-icon">📍</span><span>MIYASHITA PARK 屋上芝生ひろば<br>渋谷区神宮前6-20-10</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🚃</span><span>東京メトロ「渋谷」B1出口 徒歩3分</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🕐</span><span>13:00 キックオフ</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🎤</span><span>稲本潤一さんゲスト出演</span></div>
+          </div>
+          <div class="card-price">無料 <span>（入場制限あり）</span></div>
+          <div class="card-note warn">⚡ 混雑時は入場制限あり。荒天中止の場合あり</div>
+          <a class="card-link" href="https://www.mitsuifudosan.co.jp/bethechange/soccer/202606/" target="_blank">🔗 公式ページ</a>
+        </div>
+        <div class="card-checked-bar" onclick="toggleCheck(event,'miyashita-stadium')">✓ 確認済み — タップで展開 ▼</div>
+      </div>
+
+      <!-- ② アディダス PV -->
+      <div class="card card-type-pv" data-type="pv" data-area="shibuya" data-free="true" data-vid="adidas-pv">
+        <div class="card-header">
+          <div class="card-header-left">
+            <div class="card-name">アディダス パブリックビューイング（RAYARD MIYASHITA PARK）</div>
+            <div class="card-tags"><span class="tag tag-lottery">抽選無料</span><span class="tag tag-area-badge">渋谷</span></div>
+          </div>
+          <button class="card-check-btn" onclick="toggleCheck(event,'adidas-pv')" title="確認済み">✓</button>
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-info-row"><span class="card-info-icon">📍</span><span>RAYARD MIYASHITA PARK 渋谷区神宮前6-20-10</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🚃</span><span>東京メトロ「渋谷」B1出口 徒歩3分</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🕐</span><span>11:00開場 / 13:00 KO</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🎤</span><span>田中隼磨さんゲスト、12:30トークショー</span></div>
+          </div>
+          <div class="card-price">無料 <span>（adiClub会員・抽選）</span></div>
+          <div class="card-note warn">⚠️ 応募締切：6月10日（水）— 本日！</div>
+          <a class="card-link" href="https://go.adidas.com/ihha/dgo4afqf" target="_blank">🔗 応募ページ</a>
+        </div>
+        <div class="card-checked-bar" onclick="toggleCheck(event,'adidas-pv')">✓ 確認済み — タップで展開 ▼</div>
+      </div>
+
+      <!-- ③ Zepp Shinjuku -->
+      <div class="card card-type-pv" data-type="pv" data-area="shinjuku" data-vid="zepp-shinjuku">
+        <div class="card-header">
+          <div class="card-header-left">
+            <div class="card-name">Zepp パブリックビューイング（Zepp Shinjuku）</div>
+            <div class="card-tags"><span class="tag tag-ticket">チケット制</span><span class="tag tag-area-badge">新宿</span></div>
+          </div>
+          <button class="card-check-btn" onclick="toggleCheck(event,'zepp-shinjuku')" title="確認済み">✓</button>
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-info-row"><span class="card-info-icon">📍</span><span>Zepp Shinjuku（新宿）</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🕐</span><span>10:00開場 / 13:00 KO</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🎤</span><span>大久保嘉人・宇佐美貴史・宮市亮ほか豪華ゲスト</span></div>
+            <div class="card-info-row"><span class="card-info-icon">📺</span><span>試合前後解説トーク付き3部構成</span></div>
+          </div>
+          <div class="card-price">チケットぴあで確認 <span>（ドリンク別途）</span></div>
+          <a class="card-link" href="https://t.pia.jp/pia/event/event.do?eventBundleCd=b2668123" target="_blank">🔗 チケットぴあ</a>
+        </div>
+        <div class="card-checked-bar" onclick="toggleCheck(event,'zepp-shinjuku')">✓ 確認済み — タップで展開 ▼</div>
+      </div>
+
+      <!-- ④ スターライズタワー -->
+      <div class="card card-type-pv" data-type="pv" data-area="other" data-vid="starrise-tower">
+        <div class="card-header">
+          <div class="card-header-left">
+            <div class="card-name">スターライズタワー（東京タワー麓）</div>
+            <div class="card-tags"><span class="tag tag-ticket">有料</span><span class="tag tag-area-badge">港区</span></div>
+          </div>
+          <button class="card-check-btn" onclick="toggleCheck(event,'starrise-tower')" title="確認済み">✓</button>
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-info-row"><span class="card-info-icon">📍</span><span>STAR RISE TOWER 5F 港区芝公園4-4-7</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🚃</span><span>都営三田線「芝公園駅」徒歩5分</span></div>
+            <div class="card-info-row"><span class="card-info-icon">📐</span><span>縦7.5m×横25m 国内最大級スクリーン</span></div>
+            <div class="card-info-row"><span class="card-info-icon">👥</span><span>定員400名</span></div>
+          </div>
+          <div class="card-price">¥4,500 <span>（エリア指定自由席）</span></div>
+          <a class="card-link" href="https://livepocket.jp/e/l37en" target="_blank">🔗 LivePocketでチケット購入</a>
+        </div>
+        <div class="card-checked-bar" onclick="toggleCheck(event,'starrise-tower')">✓ 確認済み — タップで展開 ▼</div>
+      </div>
+
+      <!-- ⑤ 新宿バルト9 -->
+      <div class="card card-type-pv" data-type="pv" data-area="shinjuku" data-vid="shinjuku-wald9">
+        <div class="card-header">
+          <div class="card-header-left">
+            <div class="card-name">新宿バルト9（T・ジョイ系列）</div>
+            <div class="card-tags"><span class="tag tag-ticket">有料</span><span class="tag tag-area-badge">新宿</span></div>
+          </div>
+          <button class="card-check-btn" onclick="toggleCheck(event,'shinjuku-wald9')" title="確認済み">✓</button>
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-info-row"><span class="card-info-icon">📍</span><span>東京都新宿区（JR新宿駅徒歩約5分）</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🎬</span><span>映画館の大スクリーン＋音響</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🕐</span><span>KO 30分前より入場</span></div>
+          </div>
+          <div class="card-price">¥3,000〜 <span>（一般 / 学生¥2,000）</span></div>
+          <div class="card-note">KINEZOオンラインまたは劇場窓口で購入</div>
+          <a class="card-link" href="http://tjoy.jp/cp/2026wc/" target="_blank">🔗 特設サイト</a>
+        </div>
+        <div class="card-checked-bar" onclick="toggleCheck(event,'shinjuku-wald9')">✓ 確認済み — タップで展開 ▼</div>
+      </div>
+
+      <!-- ⑥ JFA blue-ing! -->
+      <div class="card card-type-pv" data-type="pv" data-area="other" data-vid="jfa-blueing">
+        <div class="card-header">
+          <div class="card-header-left">
+            <div class="card-name">JFA blue-ing!（東京ドームシティ）</div>
+            <div class="card-tags"><span class="tag tag-ticket">有料</span><span class="tag tag-area-badge">文京区</span></div>
+          </div>
+          <button class="card-check-btn" onclick="toggleCheck(event,'jfa-blueing')" title="確認済み">✓</button>
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-info-row"><span class="card-info-icon">📍</span><span>東京都文京区後楽1-3-61（東京ドームシティ内）</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🚃</span><span>地下鉄「後楽園」「春日」駅 徒歩すぐ</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🕐</span><span>11:00開場 / 13:00 KO</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🎫</span><span>PARKエリア/DISCOVERYエリア/セントラルパーク の3種</span></div>
+          </div>
+          <div class="card-price">¥1,000〜¥6,500 <span>（エリアにより異なる）</span></div>
+          <div class="card-note warn">⚠️ 完売の可能性あり。公式サイト要確認。</div>
+          <a class="card-link" href="https://blueing.jfa.jp/2026worldcup-groupstage" target="_blank">🔗 JFA公式</a>
+        </div>
+        <div class="card-checked-bar" onclick="toggleCheck(event,'jfa-blueing')">✓ 確認済み — タップで展開 ▼</div>
+      </div>
+
+      <!-- ⑦ イオンシネマ板橋 -->
+      <div class="card card-type-pv" data-type="pv" data-area="other" data-vid="aeon-itabashi">
+        <div class="card-header">
+          <div class="card-header-left">
+            <div class="card-name">イオンシネマ板橋（DAZN ドリームピッチ）</div>
+            <div class="card-tags"><span class="tag tag-ticket">有料</span><span class="tag tag-area-badge">板橋区</span></div>
+          </div>
+          <button class="card-check-btn" onclick="toggleCheck(event,'aeon-itabashi')" title="確認済み">✓</button>
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-info-row"><span class="card-info-icon">📍</span><span>板橋区（都営三田線「志村三丁目」徒歩5分）</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🎬</span><span>映画館の大スクリーン観戦</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🎁</span><span>オリジナルグッズ付き</span></div>
+          </div>
+          <div class="card-price">¥2,000 <span>（グッズ付き）</span></div>
+          <a class="card-link" href="https://eplus.jp/fifaworldcup2026_lv/" target="_blank">🔗 e+でチケット購入</a>
+        </div>
+        <div class="card-checked-bar" onclick="toggleCheck(event,'aeon-itabashi')">✓ 確認済み — タップで展開 ▼</div>
+      </div>
+
+      <!-- ⑧ イオンモールむさし村山 -->
+      <div class="card card-type-pv" data-type="pv" data-area="other" data-free="true" data-vid="aeon-musashi">
+        <div class="card-header">
+          <div class="card-header-left">
+            <div class="card-name">イオンモールむさし村山（無料開放）</div>
+            <div class="card-tags"><span class="tag tag-free">無料</span><span class="tag tag-area-badge">武蔵村山市</span></div>
+          </div>
+          <button class="card-check-btn" onclick="toggleCheck(event,'aeon-musashi')" title="確認済み">✓</button>
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-info-row"><span class="card-info-icon">📍</span><span>東京都武蔵村山市</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🚃</span><span>西武拝島線「武蔵砂川駅」バス約10分</span></div>
+            <div class="card-info-row"><span class="card-info-icon">📺</span><span>モール内での無料パブリックビューイング</span></div>
+          </div>
+          <div class="card-price">無料</div>
+          <a class="card-link" href="https://dazn2026pv.jp/" target="_blank">🔗 DAZN ドリームピッチ公式</a>
+        </div>
+        <div class="card-checked-bar" onclick="toggleCheck(event,'aeon-musashi')">✓ 確認済み — タップで展開 ▼</div>
+      </div>
+
+      <!-- ⑨ HUB -->
+      <div class="card card-type-bar" data-type="bar" data-area="shibuya shinjuku roppongi" data-vid="hub">
+        <div class="card-header">
+          <div class="card-header-left">
+            <div class="card-name">HUB（ハブ）ブリティッシュパブ</div>
+            <div class="card-tags"><span class="tag tag-drink">🍺 お酒あり</span><span class="tag tag-ticket">PVプランあり</span><span class="tag tag-area-badge">全都内</span></div>
+          </div>
+          <button class="card-check-btn" onclick="toggleCheck(event,'hub')" title="確認済み">✓</button>
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-info-row"><span class="card-info-icon">📍</span><span>渋谷・新宿・六本木ほか都内多数店舗</span></div>
+            <div class="card-info-row"><span class="card-info-icon">📺</span><span>全試合ライブ放映（DAZN主催PVプランあり）</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🍺</span><span>生ビール・カクテル豊富</span></div>
+          </div>
+          <div class="card-price">¥4,000 <span>（PVプラン：飲食券¥3,000分＋軽食含む）</span></div>
+          <div class="card-note">日本代表戦は早めの予約必須。</div>
+          <a class="card-link" href="https://www.pub-hub.com/index.php/PublicViewing" target="_blank">🔗 HUB 公式PVページ</a>
+        </div>
+        <div class="card-checked-bar" onclick="toggleCheck(event,'hub')">✓ 確認済み — タップで展開 ▼</div>
+      </div>
+
+      <!-- ⑩ Hobgoblin -->
+      <div class="card card-type-bar" data-type="bar" data-area="roppongi" data-vid="hobgoblin">
+        <div class="card-header">
+          <div class="card-header-left">
+            <div class="card-name">Hobgoblin（ホブゴブリン）</div>
+            <div class="card-tags"><span class="tag tag-drink">🍺 お酒あり</span><span class="tag tag-ticket">チケット制</span><span class="tag tag-area-badge">六本木・渋谷</span></div>
+          </div>
+          <button class="card-check-btn" onclick="toggleCheck(event,'hobgoblin')" title="確認済み">✓</button>
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-info-row"><span class="card-info-icon">📍</span><span>六本木・渋谷</span></div>
+            <div class="card-info-row"><span class="card-info-icon">📺</span><span>全大会試合を放映。チュニジア戦はライブ（要チケット）</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🍺</span><span>クラフトビール充実の本格ブリティッシュパブ</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🎦</span><span>店内5台の大型スクリーン、約110席</span></div>
+          </div>
+          <div class="card-price">¥3,000 <span>（カバーチャージ、ドリンク2枚含む）</span></div>
+          <a class="card-link" href="https://www.hobgoblin.jp/news-schedule" target="_blank">🔗 Hobgoblin スケジュール</a>
+        </div>
+        <div class="card-checked-bar" onclick="toggleCheck(event,'hobgoblin')">✓ 確認済み — タップで展開 ▼</div>
+      </div>
+
+      <!-- ⑪ FooTNiK -->
+      <div class="card card-type-bar" data-type="bar" data-area="ebisu" data-vid="footnik">
+        <div class="card-header">
+          <div class="card-header-left">
+            <div class="card-name">THE FooTNiK Pub（フットニック）</div>
+            <div class="card-tags"><span class="tag tag-drink">🍺 お酒あり</span><span class="tag tag-ticket">Promise Seats</span><span class="tag tag-area-badge">恵比寿</span></div>
+          </div>
+          <button class="card-check-btn" onclick="toggleCheck(event,'footnik')" title="確認済み">✓</button>
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-info-row"><span class="card-info-icon">📍</span><span>恵比寿（Ebisu）</span></div>
+            <div class="card-info-row"><span class="card-info-icon">📺</span><span>全W杯試合ライブ放映（早朝試合にも対応）</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🏆</span><span>30年以上の老舗サッカーパブ</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🍺</span><span>ビール・カクテル豊富、フード充実</span></div>
+          </div>
+          <div class="card-price">要確認 <span>（Promise Seatsチケット販売中）</span></div>
+          <a class="card-link" href="https://footnik.com/calendar/game-schedule/" target="_blank">🔗 FooTNiK 試合スケジュール</a>
+        </div>
+        <div class="card-checked-bar" onclick="toggleCheck(event,'footnik')">✓ 確認済み — タップで展開 ▼</div>
+      </div>
+
+      <!-- ⑫ Fiori -->
+      <div class="card card-type-bar" data-type="bar" data-area="shinjuku" data-vid="fiori">
+        <div class="card-header">
+          <div class="card-header-left">
+            <div class="card-name">Sports Bar Fiori（フィオーリ）</div>
+            <div class="card-tags"><span class="tag tag-drink">🍺 お酒あり</span><span class="tag tag-ticket">要チケット</span><span class="tag tag-area-badge">新宿</span></div>
+          </div>
+          <button class="card-check-btn" onclick="toggleCheck(event,'fiori')" title="確認済み">✓</button>
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-info-row"><span class="card-info-icon">📍</span><span>新宿東口エリア</span></div>
+            <div class="card-info-row"><span class="card-info-icon">📺</span><span>日本代表全3試合のライブビューイングイベント</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🍺</span><span>スポーツバーならではの熱狂的な雰囲気</span></div>
+          </div>
+          <div class="card-price">¥3,500〜¥4,000 <span>（チュニジア戦チケット）</span></div>
+          <div class="card-note warn">⚡ 事前チケット必須。当日飛び込み不可の可能性あり。</div>
+          <a class="card-link" href="https://fiori-net.com/#schedule" target="_blank">🔗 Fiori 公式スケジュール</a>
+        </div>
+        <div class="card-checked-bar" onclick="toggleCheck(event,'fiori')">✓ 確認済み — タップで展開 ▼</div>
+      </div>
+
+      <!-- ⑬ Three Monkeys -->
+      <div class="card card-type-bar" data-type="bar" data-area="shinjuku other" data-vid="three-monkeys">
+        <div class="card-header">
+          <div class="card-header-left">
+            <div class="card-name">Three Monkeys Cafe（スリーモンキーズ）</div>
+            <div class="card-tags"><span class="tag tag-drink">🍺 お酒あり</span><span class="tag tag-area-badge">銀座・上野・新宿</span></div>
+          </div>
+          <button class="card-check-btn" onclick="toggleCheck(event,'three-monkeys')" title="確認済み">✓</button>
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-info-row"><span class="card-info-icon">📍</span><span>銀座・上野・新宿の3店舗</span></div>
+            <div class="card-info-row"><span class="card-info-icon">📺</span><span>日本代表グループステージ全3試合をライブ放映</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🎯</span><span>ダーツ・エンタメ系スポーツバー</span></div>
+          </div>
+          <div class="card-price">要確認 <span>（公式サイト参照）</span></div>
+          <a class="card-link" href="https://en.pasela.co.jp/sports_schedule/" target="_blank">🔗 スポーツスケジュール確認</a>
+        </div>
+        <div class="card-checked-bar" onclick="toggleCheck(event,'three-monkeys')">✓ 確認済み — タップで展開 ▼</div>
+      </div>
+
+      <!-- ⑮ ラフォーレ原宿 アディダス PV -->
+      <div class="card card-type-pv" data-type="pv" data-area="shibuya" data-free="true" data-vid="laforet-harajuku">
+        <div class="card-header">
+          <div class="card-header-left">
+            <div class="card-name">ラフォーレ原宿 6F ラフォーレミュージアム（アディダス PV）</div>
+            <div class="card-tags"><span class="tag tag-lottery">抽選無料</span><span class="tag tag-area-badge">原宿</span></div>
+          </div>
+          <button class="card-check-btn" onclick="toggleCheck(event,'laforet-harajuku')" title="確認済み">✓</button>
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-info-row"><span class="card-info-icon">📍</span><span>ラフォーレ原宿 6F ラフォーレミュージアム<br>渋谷区神宮前1-11-6</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🚃</span><span>東京メトロ「明治神宮前」駅 徒歩1分</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🕐</span><span>11:00開場 / 13:00 KO</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🛍️</span><span>アディダス FIFA ワールドカップ ストア（6/11〜6/21）同時オープン</span></div>
+          </div>
+          <div class="card-price">無料 <span>（抽選招待）</span></div>
+          <div class="card-note warn">⚡ 応募締切：6月14日（日）23:59 / 当選発表：6月16日（火）19:00</div>
+          <a class="card-link" href="https://prtimes.jp/main/html/rd/p/000000428.000005658.html" target="_blank">🔗 プレスリリース・応募詳細</a>
+        </div>
+        <div class="card-checked-bar" onclick="toggleCheck(event,'laforet-harajuku')">✓ 確認済み — タップで展開 ▼</div>
+      </div>
+
+      <!-- ⑯ 渋谷ヒカリエ レノボ PV -->
+      <div class="card card-type-pv" data-type="pv" data-area="shibuya" data-free="true" data-vid="shibuya-hikarie">
+        <div class="card-header">
+          <div class="card-header-left">
+            <div class="card-name">渋谷ヒカリエ 9F ヒカリエホール（レノボ PV）</div>
+            <div class="card-tags"><span class="tag tag-lottery">抽選無料</span><span class="tag tag-area-badge">渋谷</span></div>
+          </div>
+          <button class="card-check-btn" onclick="toggleCheck(event,'shibuya-hikarie')" title="確認済み">✓</button>
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-info-row"><span class="card-info-icon">📍</span><span>渋谷ヒカリエ 9F ヒカリエホール ホールA<br>渋谷区渋谷2-21-1</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🚃</span><span>JR・各線「渋谷」駅 直結</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🕐</span><span>11:00開場 / 13:00 KO</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🎤</span><span>遠藤保仁・岩田剛典（GAN）ゲスト登壇（12:00〜）</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🤖</span><span>AI技術活用の次世代型PV / PK体験ゲームあり</span></div>
+          </div>
+          <div class="card-price">無料 <span>（抽選招待・最大300名）</span></div>
+          <div class="card-note warn">⚠️ 申込締切は6/9（火）で締切済み。当選者のみ参加可。</div>
+          <a class="card-link" href="https://news.mynavi.jp/article/20260605-4545312/" target="_blank">🔗 詳細記事</a>
+        </div>
+        <div class="card-checked-bar" onclick="toggleCheck(event,'shibuya-hikarie')">✓ 確認済み — タップで展開 ▼</div>
+      </div>
+
+      <!-- ⑰ 渋谷ディスカス -->
+      <div class="card card-type-bar" data-type="bar" data-area="shibuya" data-vid="discus">
+        <div class="card-header">
+          <div class="card-header-left">
+            <div class="card-name">渋谷ディスカス（スポーツバー）</div>
+            <div class="card-tags"><span class="tag tag-drink">🍺 お酒あり</span><span class="tag tag-area-badge">渋谷</span></div>
+          </div>
+          <button class="card-check-btn" onclick="toggleCheck(event,'discus')" title="確認済み">✓</button>
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-info-row"><span class="card-info-icon">📍</span><span>渋谷エリア</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🕐</span><span>24時間営業（早朝試合にも対応）</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🍺</span><span>飲食物持ち込みOK</span></div>
+            <div class="card-info-row"><span class="card-info-icon">📞</span><span>電話予約必須：03-3797-0770</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🏆</span><span>2002年W杯からの老舗スポーツバー</span></div>
+          </div>
+          <div class="card-price">¥1,000 <span>（入場料のみ）</span></div>
+          <div class="card-note warn">⚡ 予約必須。電話で事前確認を。</div>
+        </div>
+        <div class="card-checked-bar" onclick="toggleCheck(event,'discus')">✓ 確認済み — タップで展開 ▼</div>
+      </div>
+
+    </div><!-- /card-grid -->
+  </div>
+</div><!-- /tab-list -->
+
+<!-- ===== MAP TAB ===== -->
+<div id="tab-map" class="tab-panel">
+  <div class="map-wrap">
+    <div class="map-legend">
+      <div class="map-legend-item"><div class="map-legend-dot" style="background:#1d4ed8"></div> パブリックビューイング</div>
+      <div class="map-legend-item"><div class="map-legend-dot" style="background:#BC002D"></div> スポーツバー・パブ</div>
+      <div style="margin-left:auto;font-size:11px;color:var(--text-muted)">ピンをクリックで詳細表示</div>
+    </div>
+    <div id="map"></div>
+  </div>
+</div>
+
+<footer>
+  <p>情報調査日時: <span id="footer-time">—</span></p>
+  <p style="margin-top:4px">料金・時間は変更になる場合があります。最新情報は各公式サイトをご確認ください。</p>
+  <p style="margin-top:6px">⚽ 頑張れ、サムライブルー！ 🇯🇵</p>
+</footer>
+
+<script src="new_venues.js" onerror="window.NEW_VENUES=[];window.NEW_VENUES_UPDATED=null;"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+// ======= TIMESTAMP =======
+(function(){
+  const d = new Date(document.lastModified);
+  const p = n => String(n).padStart(2,'0');
+  const str = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 ${p(d.getHours())}:${p(d.getMinutes())}`;
+  document.getElementById('updated-tag').textContent = '🕐 情報調査日時: ' + str;
+  document.getElementById('footer-time').textContent = str;
+})();
+
+// ======= NEW VENUES =======
+(function(){
+  const venues = window.NEW_VENUES || [];
+  const updated = window.NEW_VENUES_UPDATED;
+  document.getElementById('new-count').textContent = venues.length;
+  if (updated) document.getElementById('new-updated-meta').textContent = '更新: ' + updated;
+  if (venues.length === 0) return;
+  document.getElementById('new-empty').style.display = 'none';
+  const grid = document.getElementById('new-card-grid');
+  grid.style.display = 'grid';
+  venues.forEach(v => {
+    const typeLabel = v.type==='bar' ? '🍺 スポーツバー・パブ' : '🏟️ PV会場';
+    grid.insertAdjacentHTML('beforeend',`
+      <div class="new-card">
+        <div class="new-badge">🆕 NEW</div>
+        <div class="new-card-name">${v.name}</div>
+        <div class="new-card-area">📍 ${v.area} &nbsp;·&nbsp; ${typeLabel}</div>
+        <div class="new-card-price">${v.price||'料金要確認'}</div>
+        ${v.note?`<div class="new-card-note">${v.note}</div>`:''}
+        ${v.url?`<a class="new-card-link" href="${v.url}" target="_blank">🔗 詳細・予約</a>`:''}
+      </div>`);
+  });
+})();
+
+let newOpen = true;
+function toggleNewBanner(){
+  newOpen = !newOpen;
+  document.getElementById('new-banner-body').style.display = newOpen ? 'block' : 'none';
+  document.getElementById('new-chevron').textContent = newOpen ? '▼' : '▶';
+}
+
+// ======= CARD CHECK (localStorage) =======
+const LS_KEY = 'wc_pv_checked_v1';
+let checked = new Set(JSON.parse(localStorage.getItem(LS_KEY)||'[]'));
+let hideChecked = false;
+
+function getCard(vid){ return document.querySelector(`.card[data-vid="${vid}"]`); }
+
+function applyCheckedState(vid){
+  const card = getCard(vid);
+  if(!card) return;
+  const isChecked = checked.has(vid);
+  card.classList.toggle('is-checked', isChecked);
+  if(hideChecked) card.classList.toggle('hidden', isChecked);
+}
+
+function toggleCheck(e, vid){
+  e.stopPropagation();
+  if(checked.has(vid)) checked.delete(vid);
+  else checked.add(vid);
+  localStorage.setItem(LS_KEY, JSON.stringify([...checked]));
+  applyCheckedState(vid);
+  updateCheckCount();
+}
+
+function updateCheckCount(){
+  const total = document.querySelectorAll('.card[data-vid]').length;
+  document.getElementById('check-count-label').innerHTML =
+    `確認済み <strong>${checked.size}</strong> / <span id="total-count">${total}</span> 件`;
+}
+
+function toggleHideChecked(){
+  hideChecked = !hideChecked;
+  const btn = document.getElementById('hide-checked-btn');
+  btn.textContent = hideChecked ? '確認済みを表示' : '確認済みを隠す';
+  btn.classList.toggle('active-hide', hideChecked);
+  document.querySelectorAll('.card[data-vid]').forEach(card => {
+    const vid = card.dataset.vid;
+    if(checked.has(vid)){
+      card.classList.toggle('hidden', hideChecked);
+    }
+  });
+}
+
+function resetAllChecked(){
+  checked.clear();
+  localStorage.setItem(LS_KEY, '[]');
+  document.querySelectorAll('.card[data-vid]').forEach(card => {
+    card.classList.remove('is-checked','hidden');
+  });
+  updateCheckCount();
+  if(hideChecked){ hideChecked=false; document.getElementById('hide-checked-btn').textContent='確認済みを隠す'; document.getElementById('hide-checked-btn').classList.remove('active-hide'); }
+}
+
+// Restore state on load
+document.querySelectorAll('.card[data-vid]').forEach(card => {
+  applyCheckedState(card.dataset.vid);
+});
+updateCheckCount();
+
+// ======= FILTER =======
+let currentFilter = 'all';
+function filterCards(type){
+  currentFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`[data-filter="${type}"]`).classList.add('active');
+  document.querySelectorAll('.card[data-type]').forEach(card => {
+    const t=card.dataset.type||'', a=card.dataset.area||'', f=card.dataset.free==='true';
+    const isCheckedHidden = hideChecked && checked.has(card.dataset.vid);
+    const show = !isCheckedHidden && (type==='all'
+      ||(type==='pv'&&t==='pv')||(type==='bar'&&t==='bar')||(type==='free'&&f)
+      ||(type==='shibuya'&&a.includes('shibuya'))||(type==='shinjuku'&&a.includes('shinjuku'))
+      ||(type==='roppongi'&&a.includes('roppongi'))||(type==='ebisu'&&a.includes('ebisu'))
+      ||(type==='other'&&a.includes('other')));
+    card.classList.toggle('hidden', !show);
+  });
+}
+
+// ======= TABS =======
+function switchTab(name, btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='map' && !window._mapInit) initMap();
+}
+
+// ======= MAP =======
+function initMap(){
+  window._mapInit = true;
+  const map = L.map('map').setView([35.672,139.710],12);
+
+  // OpenStreetMap 標準タイル（駅名・路線が表示される）
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom:19
+  }).addTo(map);
+
+  function mkIcon(color, isNew){
+    const shadow = isNew
+      ? `box-shadow:0 0 0 3px ${color},0 0 0 6px rgba(245,158,11,.5);`
+      : `box-shadow:0 2px 8px rgba(0,0,0,.35);`;
+    return L.divIcon({
+      className:'',
+      html:`<div style="width:20px;height:20px;background:${color};border:2.5px solid #fff;border-radius:50%;${shadow}"></div>`,
+      iconSize:[20,20],iconAnchor:[10,10],popupAnchor:[0,-12]
+    });
+  }
+
+  const newNames = (window.NEW_VENUES||[]).map(v=>v.name);
+  const venues = [
+    {lat:35.6616,lng:139.7034,name:'MIYASHITA STADIUM',area:'渋谷',price:'無料',type:'pv',note:'三井不動産×JFA・稲本潤一ゲスト',url:'https://www.mitsuifudosan.co.jp/bethechange/soccer/202606/'},
+    {lat:35.6614,lng:139.7030,name:'アディダス PV (MIYASHITA PARK)',area:'渋谷',price:'無料（adiClub抽選）',type:'pv',note:'田中隼磨ゲスト',url:'https://go.adidas.com/ihha/dgo4afqf'},
+    {lat:35.6944,lng:139.7030,name:'Zepp Shinjuku PV',area:'新宿',price:'チケットぴあで確認',type:'pv',note:'豪華ゲスト解説付き3部構成',url:'https://t.pia.jp/pia/event/event.do?eventBundleCd=b2668123'},
+    {lat:35.6585,lng:139.7453,name:'スターライズタワー（東京タワー麓）',area:'港区',price:'¥4,500',type:'pv',note:'国内最大級スクリーン・定員400名',url:'https://livepocket.jp/e/l37en'},
+    {lat:35.6929,lng:139.7010,name:'新宿バルト9（T・ジョイ）',area:'新宿',price:'¥3,000〜',type:'pv',note:'映画館大スクリーン',url:'http://tjoy.jp/cp/2026wc/'},
+    {lat:35.7057,lng:139.7526,name:'JFA blue-ing!',area:'文京区（東京ドームシティ）',price:'¥1,000〜¥6,500',type:'pv',note:'JFA公式施設',url:'https://blueing.jfa.jp/2026worldcup-groupstage'},
+    {lat:35.7711,lng:139.6876,name:'イオンシネマ板橋',area:'板橋区',price:'¥2,000（グッズ付き）',type:'pv',note:'DAZN ドリームピッチ',url:'https://eplus.jp/fifaworldcup2026_lv/'},
+    {lat:35.7451,lng:139.4069,name:'イオンモールむさし村山',area:'武蔵村山市',price:'無料',type:'pv',note:'DAZN ドリームピッチ',url:'https://dazn2026pv.jp/'},
+    {lat:35.6583,lng:139.6990,name:'HUB 渋谷店',area:'渋谷',price:'¥4,000（PVプラン）',type:'bar',note:'全試合ライブ放映',url:'https://www.pub-hub.com/index.php/PublicViewing'},
+    {lat:35.6917,lng:139.7005,name:'HUB 新宿店',area:'新宿',price:'¥4,000（PVプラン）',type:'bar',note:'全試合ライブ放映',url:'https://www.pub-hub.com/index.php/PublicViewing'},
+    {lat:35.6627,lng:139.7316,name:'HUB 六本木店',area:'六本木',price:'¥4,000（PVプラン）',type:'bar',note:'全試合ライブ放映',url:'https://www.pub-hub.com/index.php/PublicViewing'},
+    {lat:35.6626,lng:139.7306,name:'Hobgoblin 六本木',area:'六本木',price:'¥3,000（ドリンク2枚込）',type:'bar',note:'全大会試合放映',url:'https://www.hobgoblin.jp/news-schedule'},
+    {lat:35.6474,lng:139.7104,name:'THE FooTNiK Pub',area:'恵比寿',price:'要確認',type:'bar',note:'30年以上の老舗サッカーパブ',url:'https://footnik.com/calendar/game-schedule/'},
+    {lat:35.6933,lng:139.7054,name:'Sports Bar Fiori',area:'新宿東口',price:'¥3,500〜¥4,000',type:'bar',note:'日本代表全3試合イベント',url:'https://fiori-net.com/#schedule'},
+    {lat:35.6717,lng:139.7649,name:'Three Monkeys Cafe 銀座',area:'銀座',price:'要確認',type:'bar',note:'日本代表3試合ライブ放映',url:'https://en.pasela.co.jp/sports_schedule/'},
+    {lat:35.6905,lng:139.6994,name:'Three Monkeys Cafe 新宿',area:'新宿',price:'要確認',type:'bar',note:'日本代表3試合ライブ放映',url:'https://en.pasela.co.jp/sports_schedule/'},
+    {lat:35.6610,lng:139.7020,name:'渋谷ディスカス',area:'渋谷',price:'¥1,000（入場料のみ）',type:'bar',note:'24時間営業・飲食物持込OK'},
+    {lat:35.6703,lng:139.7048,name:'ラフォーレ原宿 6F（アディダス PV）',area:'原宿',price:'無料（抽選）',type:'pv',note:'6/14締切・当選発表6/16',url:'https://prtimes.jp/main/html/rd/p/000000428.000005658.html'},
+    {lat:35.6591,lng:139.7034,name:'渋谷ヒカリエ 9F（レノボ PV）',area:'渋谷',price:'無料（抽選・締切済み）',type:'pv',note:'遠藤保仁・岩田剛典ゲスト',url:'https://news.mynavi.jp/article/20260605-4545312/'},
+  ];
+
+  // 新着会場（緯度経度があればプロット）
+  (window.NEW_VENUES||[]).forEach(v=>{ if(v.lat&&v.lng) venues.push({...v,isNew:true}); });
+
+  venues.forEach(v=>{
+    const color = v.type==='pv' ? '#1d4ed8' : '#BC002D';
+    const isNew = v.isNew || newNames.includes(v.name);
+    const typeLabel = v.type==='pv'
+      ? '<div class="popup-type-pv">▶ PV会場</div>'
+      : '<div class="popup-type-bar">▶ 🍺 スポーツバー・パブ</div>';
+    const newBadge = isNew ? `<span style="background:#f59e0b;color:#000;font-size:10px;font-weight:800;padding:1px 6px;border-radius:6px;margin-left:4px">NEW</span>` : '';
+    L.marker([v.lat,v.lng],{icon:mkIcon(color,isNew)}).addTo(map).bindPopup(`
+      <div style="min-width:170px;max-width:215px">
+        ${typeLabel}
+        <div class="popup-name">${v.name}${newBadge}</div>
+        <div class="popup-area">📍 ${v.area}</div>
+        <div class="popup-price">${v.price||'料金要確認'}</div>
+        ${v.note?`<div class="popup-note">${v.note}</div>`:''}
+        ${v.url?`<div style="margin-top:5px"><a href="${v.url}" target="_blank" style="font-size:11px;color:#1d4ed8">🔗 詳細</a></div>`:''}
+      </div>`);
+  });
+}
+</script>
+</body>
+</html>
