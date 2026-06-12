@@ -222,7 +222,7 @@
     </div>
 
     <div class="check-toolbar">
-      <span class="check-count" id="check-count-label">確認済み <strong>0</strong> / <span id="total-count">14</span> 件</span>
+      <span class="check-count" id="check-count-label">確認済み <strong>0</strong> / <span id="total-count">18</span> 件</span>
       <button class="toolbar-btn" id="hide-checked-btn" onclick="toggleHideChecked()">確認済みを隠す</button>
       <button class="toolbar-btn" onclick="resetAllChecked()">すべてリセット</button>
     </div>
@@ -373,7 +373,8 @@
           <div class="card-info">
             <div class="card-info-row"><span class="card-info-icon">📍</span><span>東京都文京区後楽1-3-61（東京ドームシティ内）</span></div>
             <div class="card-info-row"><span class="card-info-icon">🚃</span><span>地下鉄「後楽園」「春日」駅 徒歩すぐ</span></div>
-            <div class="card-info-row"><span class="card-info-icon">🕐</span><span>11:00開場 / 13:00 KO</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🕐</span><span>11:00開場（セントラルパーク12:00）/ 13:00 KO</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🎤</span><span>川口能活さん・中田浩二さんゲスト（チュニジア戦）</span></div>
             <div class="card-info-row"><span class="card-info-icon">🎫</span><span>PARKエリア/DISCOVERYエリア/セントラルパーク の3種</span></div>
           </div>
           <div class="card-price">¥1,000〜¥6,500 <span>（エリアにより異なる）</span></div>
@@ -516,6 +517,53 @@
         <div class="card-checked-bar" onclick="toggleCheck(event,'bunkyo-civic')">✓ 確認済み — タップで展開 ▼</div>
       </div>
 
+      <!-- ⑮ ラフォーレ原宿 アディダス PV -->
+      <div class="card card-type-pv" data-type="pv" data-area="shibuya" data-free="true" data-vid="laforet-harajuku">
+        <div class="card-header">
+          <div class="card-header-left">
+            <div class="card-name">ラフォーレ原宿 6F ラフォーレミュージアム（アディダス PV）</div>
+            <div class="card-tags"><span class="tag tag-lottery">抽選無料</span><span class="tag tag-area-badge">原宿</span></div>
+          </div>
+          <button class="card-check-btn" onclick="toggleCheck(event,'laforet-harajuku')" title="確認済み">✓</button>
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-info-row"><span class="card-info-icon">📍</span><span>ラフォーレ原宿 6F ラフォーレミュージアム<br>渋谷区神宮前1-11-6</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🚃</span><span>東京メトロ「明治神宮前」駅 徒歩1分</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🕐</span><span>11:00開場 / 13:00 KO</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🛍️</span><span>アディダス FIFA ワールドカップ ストア（6/11〜6/21）同時オープン</span></div>
+          </div>
+          <div class="card-price">無料 <span>（抽選招待）</span></div>
+          <div class="card-note warn">⚡ 応募締切：6月14日（日）23:59 / 当選発表：6月16日（火）19:00</div>
+          <a class="card-link" href="https://prtimes.jp/main/html/rd/p/000000428.000005658.html" target="_blank">🔗 プレスリリース・応募詳細</a>
+        </div>
+        <div class="card-checked-bar" onclick="toggleCheck(event,'laforet-harajuku')">✓ 確認済み — タップで展開 ▼</div>
+      </div>
+
+      <!-- ⑯ 渋谷ヒカリエ レノボ PV -->
+      <div class="card card-type-pv" data-type="pv" data-area="shibuya" data-free="true" data-vid="shibuya-hikarie">
+        <div class="card-header">
+          <div class="card-header-left">
+            <div class="card-name">渋谷ヒカリエ 9F ヒカリエホール（レノボ PV）</div>
+            <div class="card-tags"><span class="tag tag-lottery">抽選無料</span><span class="tag tag-area-badge">渋谷</span></div>
+          </div>
+          <button class="card-check-btn" onclick="toggleCheck(event,'shibuya-hikarie')" title="確認済み">✓</button>
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-info-row"><span class="card-info-icon">📍</span><span>渋谷ヒカリエ 9F ヒカリエホール ホールA<br>渋谷区渋谷2-21-1</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🚃</span><span>JR・各線「渋谷」駅 直結</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🕐</span><span>11:00開場 / 13:00 KO</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🎤</span><span>遠藤保仁・岩田剛典（GAN）ゲスト登壇（12:00〜）</span></div>
+            <div class="card-info-row"><span class="card-info-icon">🤖</span><span>AI技術活用の次世代型PV / PK体験ゲームあり</span></div>
+          </div>
+          <div class="card-price">無料 <span>（抽選招待・最大300名）</span></div>
+          <div class="card-note warn">⚠️ 申込締切は6/9（火）で締切済み。当選者のみ参加可。</div>
+          <a class="card-link" href="https://news.mynavi.jp/article/20260605-4545312/" target="_blank">🔗 詳細記事</a>
+        </div>
+        <div class="card-checked-bar" onclick="toggleCheck(event,'shibuya-hikarie')">✓ 確認済み — タップで展開 ▼</div>
+      </div>
+
       <!-- ⑨ HUB -->
       <div class="card card-type-bar" data-type="bar" data-area="shibuya shinjuku roppongi" data-vid="hub">
         <div class="card-header">
@@ -623,53 +671,6 @@
           <a class="card-link" href="https://en.pasela.co.jp/sports_schedule/" target="_blank">🔗 スポーツスケジュール確認</a>
         </div>
         <div class="card-checked-bar" onclick="toggleCheck(event,'three-monkeys')">✓ 確認済み — タップで展開 ▼</div>
-      </div>
-
-      <!-- ⑮ ラフォーレ原宿 アディダス PV -->
-      <div class="card card-type-pv" data-type="pv" data-area="shibuya" data-free="true" data-vid="laforet-harajuku">
-        <div class="card-header">
-          <div class="card-header-left">
-            <div class="card-name">ラフォーレ原宿 6F ラフォーレミュージアム（アディダス PV）</div>
-            <div class="card-tags"><span class="tag tag-lottery">抽選無料</span><span class="tag tag-area-badge">原宿</span></div>
-          </div>
-          <button class="card-check-btn" onclick="toggleCheck(event,'laforet-harajuku')" title="確認済み">✓</button>
-        </div>
-        <div class="card-body">
-          <div class="card-info">
-            <div class="card-info-row"><span class="card-info-icon">📍</span><span>ラフォーレ原宿 6F ラフォーレミュージアム<br>渋谷区神宮前1-11-6</span></div>
-            <div class="card-info-row"><span class="card-info-icon">🚃</span><span>東京メトロ「明治神宮前」駅 徒歩1分</span></div>
-            <div class="card-info-row"><span class="card-info-icon">🕐</span><span>11:00開場 / 13:00 KO</span></div>
-            <div class="card-info-row"><span class="card-info-icon">🛍️</span><span>アディダス FIFA ワールドカップ ストア（6/11〜6/21）同時オープン</span></div>
-          </div>
-          <div class="card-price">無料 <span>（抽選招待）</span></div>
-          <div class="card-note warn">⚡ 応募締切：6月14日（日）23:59 / 当選発表：6月16日（火）19:00</div>
-          <a class="card-link" href="https://prtimes.jp/main/html/rd/p/000000428.000005658.html" target="_blank">🔗 プレスリリース・応募詳細</a>
-        </div>
-        <div class="card-checked-bar" onclick="toggleCheck(event,'laforet-harajuku')">✓ 確認済み — タップで展開 ▼</div>
-      </div>
-
-      <!-- ⑯ 渋谷ヒカリエ レノボ PV -->
-      <div class="card card-type-pv" data-type="pv" data-area="shibuya" data-free="true" data-vid="shibuya-hikarie">
-        <div class="card-header">
-          <div class="card-header-left">
-            <div class="card-name">渋谷ヒカリエ 9F ヒカリエホール（レノボ PV）</div>
-            <div class="card-tags"><span class="tag tag-lottery">抽選無料</span><span class="tag tag-area-badge">渋谷</span></div>
-          </div>
-          <button class="card-check-btn" onclick="toggleCheck(event,'shibuya-hikarie')" title="確認済み">✓</button>
-        </div>
-        <div class="card-body">
-          <div class="card-info">
-            <div class="card-info-row"><span class="card-info-icon">📍</span><span>渋谷ヒカリエ 9F ヒカリエホール ホールA<br>渋谷区渋谷2-21-1</span></div>
-            <div class="card-info-row"><span class="card-info-icon">🚃</span><span>JR・各線「渋谷」駅 直結</span></div>
-            <div class="card-info-row"><span class="card-info-icon">🕐</span><span>11:00開場 / 13:00 KO</span></div>
-            <div class="card-info-row"><span class="card-info-icon">🎤</span><span>遠藤保仁・岩田剛典（GAN）ゲスト登壇（12:00〜）</span></div>
-            <div class="card-info-row"><span class="card-info-icon">🤖</span><span>AI技術活用の次世代型PV / PK体験ゲームあり</span></div>
-          </div>
-          <div class="card-price">無料 <span>（抽選招待・最大300名）</span></div>
-          <div class="card-note warn">⚠️ 申込締切は6/9（火）で締切済み。当選者のみ参加可。</div>
-          <a class="card-link" href="https://news.mynavi.jp/article/20260605-4545312/" target="_blank">🔗 詳細記事</a>
-        </div>
-        <div class="card-checked-bar" onclick="toggleCheck(event,'shibuya-hikarie')">✓ 確認済み — タップで展開 ▼</div>
       </div>
 
       <!-- ⑰ 渋谷ディスカス -->
@@ -882,6 +883,8 @@ function initMap(){
     {lat:35.7081,lng:139.7522,name:'文京シビックセンター 区民ひろば',area:'文京区',price:'無料（区民限定・締切済み）',type:'pv',note:'定員150名',url:'https://www.city.bunkyo.lg.jp/b015/p007665.html'},
     {lat:35.7711,lng:139.6876,name:'イオンシネマ板橋',area:'板橋区',price:'¥2,000（グッズ付き）',type:'pv',note:'DAZN ドリームピッチ',url:'https://eplus.jp/fifaworldcup2026_lv/'},
     {lat:35.7451,lng:139.4069,name:'イオンモールむさし村山',area:'武蔵村山市',price:'無料',type:'pv',note:'DAZN ドリームピッチ',url:'https://dazn2026pv.jp/'},
+    {lat:35.6703,lng:139.7048,name:'ラフォーレ原宿 6F（アディダス PV）',area:'原宿',price:'無料（抽選）',type:'pv',note:'応募6/14締切・当選発表6/16',url:'https://prtimes.jp/main/html/rd/p/000000428.000005658.html'},
+    {lat:35.6591,lng:139.7034,name:'渋谷ヒカリエ 9F（レノボ PV）',area:'渋谷',price:'無料（抽選・締切済み）',type:'pv',note:'遠藤保仁・岩田剛典ゲスト',url:'https://news.mynavi.jp/article/20260605-4545312/'},
     {lat:35.6583,lng:139.6990,name:'HUB 渋谷店',area:'渋谷',price:'¥4,000（PVプラン）',type:'bar',note:'全試合ライブ放映',url:'https://www.pub-hub.com/index.php/PublicViewing'},
     {lat:35.6917,lng:139.7005,name:'HUB 新宿店',area:'新宿',price:'¥4,000（PVプラン）',type:'bar',note:'全試合ライブ放映',url:'https://www.pub-hub.com/index.php/PublicViewing'},
     {lat:35.6627,lng:139.7316,name:'HUB 六本木店',area:'六本木',price:'¥4,000（PVプラン）',type:'bar',note:'全試合ライブ放映',url:'https://www.pub-hub.com/index.php/PublicViewing'},
@@ -891,8 +894,6 @@ function initMap(){
     {lat:35.6717,lng:139.7649,name:'Three Monkeys Cafe 銀座',area:'銀座',price:'要確認',type:'bar',note:'日本代表3試合ライブ放映',url:'https://en.pasela.co.jp/sports_schedule/'},
     {lat:35.6905,lng:139.6994,name:'Three Monkeys Cafe 新宿',area:'新宿',price:'要確認',type:'bar',note:'日本代表3試合ライブ放映',url:'https://en.pasela.co.jp/sports_schedule/'},
     {lat:35.6610,lng:139.7020,name:'渋谷ディスカス',area:'渋谷',price:'¥1,000（入場料のみ）',type:'bar',note:'24時間営業・飲食物持込OK'},
-    {lat:35.6703,lng:139.7048,name:'ラフォーレ原宿 6F（アディダス PV）',area:'原宿',price:'無料（抽選）',type:'pv',note:'6/14締切・当選発表6/16',url:'https://prtimes.jp/main/html/rd/p/000000428.000005658.html'},
-    {lat:35.6591,lng:139.7034,name:'渋谷ヒカリエ 9F（レノボ PV）',area:'渋谷',price:'無料（抽選・締切済み）',type:'pv',note:'遠藤保仁・岩田剛典ゲスト',url:'https://news.mynavi.jp/article/20260605-4545312/'},
   ];
 
   // 新着会場（緯度経度があればプロット）
